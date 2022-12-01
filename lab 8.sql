@@ -32,22 +32,30 @@ join inventory i on f.film_id = i.film_id
 join rental r on r.inventory_id = i.inventory_id
 group by f.title order by count(r.rental_date) desc;
 -- 5. List the top five genres in gross revenue in descending order.
-select cat.name, sum(p.amount) as revenue from category cat
+select cat.name as film_category, sum(p.amount) as revenue_gross from category cat
 join film_category fc on fc.category_id = cat.category_id
 join inventory i on i.film_id = fc.film_id
 join rental r on r.inventory_id = i.inventory_id
 join payment p on p.rental_id = r.rental_id
 group by cat.name order by sum(p.amount) desc limit 5;
 -- 6. Is "Academy Dinosaur" available for rent from Store 1?
-select f.title, s.store_id, count(r.rental_date)-count(r.return_date) as available from film f
+select f.title, s.store_id, count(r.rental_date)-count(r.return_date)
+as available_in_store from film f
 join inventory i on i.film_id = f.film_id 
 join store s on s.store_id = i.store_id
 join rental r on r.inventory_id = i.inventory_id
 where f.title = "Academy Dinosaur"
 group by s.store_id;
 -- 7. Get all pairs of actors that worked together. (copied from other student)
-SELECT *
-FROM film_actor as fa1
-JOIN film_actor as fa2
-ON (fa1.film_id = fa2.film_id) AND (fa1.actor_id > fa2.actor_id)
-ORDER BY fa1.film_id ASC;
+select concat(a1.first_name," ",a1.last_name) as actor_1, 
+concat(a2.first_name," ",a2.last_name) as actor_2, 
+f.title as movie_title, f.release_year from film_actor fa1
+join film_actor fa2 on fa1.film_id = fa2.film_id and fa1.actor_id < fa2.actor_id
+join actor a1 on fa1.actor_id = a1.actor_id
+join actor a2 on fa2.actor_id = a2.actor_id
+join film f on fa1.film_id = f.film_id;
+
+
+
+
+
