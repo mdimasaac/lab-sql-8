@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
--- 8. Get all pairs of customers that have rented the same film more than 3 times.
--- 9. For each film, list actor that has acted in more films.
-
 -- 1. Write a query to display for each store its store ID, city, and country.
 use sakila;
 select store.store_id as store_id, city.city, country.country from store
@@ -40,13 +30,13 @@ join payment p on p.rental_id = r.rental_id
 group by cat.name order by sum(p.amount) desc limit 5;
 -- 6. Is "Academy Dinosaur" available for rent from Store 1?
 select f.title, s.store_id, count(r.rental_date)-count(r.return_date)
-as available_in_store from film f
+as num_rented from film f
 join inventory i on i.film_id = f.film_id 
 join store s on s.store_id = i.store_id
 join rental r on r.inventory_id = i.inventory_id
 where f.title = "Academy Dinosaur"
 group by s.store_id;
--- 7. Get all pairs of actors that worked together. (copied from other student)
+-- 7. Get all pairs of actors that worked together.
 select concat(a1.first_name," ",a1.last_name) as actor_1, 
 concat(a2.first_name," ",a2.last_name) as actor_2, 
 f.title as movie_title, f.release_year from film_actor fa1
@@ -59,3 +49,25 @@ join film f on fa1.film_id = f.film_id;
 
 
 
+
+-- trying to do number 6
+select f.title, s.store_id, count(r.rental_date)-count(r.return_date)
+as available_in_store from film f
+join inventory i on i.film_id = f.film_id 
+join store s on s.store_id = i.store_id
+join rental r on r.inventory_id = i.inventory_id
+where f.title = "Academy Dinosaur"
+group by s.store_id;
+select f.title, i.store_id, count(i.film_id) as total_stock,
+count(i.film_id)-(count(r.rental_date)-count(r.return_date)) as available
+from inventory i
+join film f on f.film_id = i.film_id
+join rental r on r.inventory_id = i.inventory_id
+where f.title = "Academy Dinosaur"
+group by i.store_id, i.film_id;
+select * from inventory;
+select f.film_id, f.title from film f
+join inventory i on i.film_id = f.film_id
+where f.title = "Academy Dinosaur";
+-- 8. Get all pairs of customers that have rented the same film more than 3 times.
+-- 9. For each film, list actor that has acted in more films.
