@@ -49,4 +49,3 @@ join actor a2 on fa2.actor_id = a2.actor_id
 join film f on fa1.film_id = f.film_id;
 -- 8. Get all pairs of customers that have rented the same film more than 3 times.
 -- 9. For each film, list actor that has acted in more films.
--- 6. Is "Academy Dinosaur" available for rent from Store 1?
