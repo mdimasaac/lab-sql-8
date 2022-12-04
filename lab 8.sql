@@ -29,13 +29,16 @@ join rental r on r.inventory_id = i.inventory_id
 join payment p on p.rental_id = r.rental_id
 group by cat.name order by sum(p.amount) desc limit 5;
 -- 6. Is "Academy Dinosaur" available for rent from Store 1?
-select f.title, s.store_id, count(r.rental_date)-count(r.return_date)
-as num_rented from film f
-join inventory i on i.film_id = f.film_id 
-join store s on s.store_id = i.store_id
-join rental r on r.inventory_id = i.inventory_id
+select f.title, i.store_id, case
+when count(distinct i.film_id)-(count(r.rental_date)-count(r.return_date)) > 0 then "yes"
+when count(distinct i.film_id)-(count(r.rental_date)-count(r.return_date)) <= 0 then "no"
+end as available,
+count(distinct i.film_id)-(count(r.rental_date)-count(r.return_date)) as stock
+from inventory i
+left join rental r on i.inventory_id = r.inventory_id
+join film f on f.film_id = i.film_id
 where f.title = "Academy Dinosaur"
-group by s.store_id;
+group by i.store_id, i.inventory_id;
 -- 7. Get all pairs of actors that worked together.
 select concat(a1.first_name," ",a1.last_name) as actor_1, 
 concat(a2.first_name," ",a2.last_name) as actor_2, 
@@ -44,30 +47,6 @@ join film_actor fa2 on fa1.film_id = fa2.film_id and fa1.actor_id < fa2.actor_id
 join actor a1 on fa1.actor_id = a1.actor_id
 join actor a2 on fa2.actor_id = a2.actor_id
 join film f on fa1.film_id = f.film_id;
-
-
-
-
-
-
--- trying to do number 6
-select f.title, s.store_id, count(r.rental_date)-count(r.return_date)
-as available_in_store from film f
-join inventory i on i.film_id = f.film_id 
-join store s on s.store_id = i.store_id
-join rental r on r.inventory_id = i.inventory_id
-where f.title = "Academy Dinosaur"
-group by s.store_id;
-select f.title, i.store_id, count(i.film_id) as total_stock,
-count(i.film_id)-(count(r.rental_date)-count(r.return_date)) as available
-from inventory i
-join film f on f.film_id = i.film_id
-join rental r on r.inventory_id = i.inventory_id
-where f.title = "Academy Dinosaur"
-group by i.store_id, i.film_id;
-select * from inventory;
-select f.film_id, f.title from film f
-join inventory i on i.film_id = f.film_id
-where f.title = "Academy Dinosaur";
 -- 8. Get all pairs of customers that have rented the same film more than 3 times.
 -- 9. For each film, list actor that has acted in more films.
+-- 6. Is "Academy Dinosaur" available for rent from Store 1?
